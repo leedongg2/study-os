@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>동규 Study OS v2.29 — Personal Operating System</title>
+<title>동규 Study OS v2.30 — Personal Operating System</title>
 <meta name="theme-color" content="#ffb800">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -3231,6 +3231,27 @@ body.mobile-mode .ws-tab { padding: 9px 13px; font-size: 12px; }
 .shop-usd-btn { background: transparent; border: 1px solid var(--cyan); color: var(--cyan); font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 4px 8px; cursor: pointer; margin-left: 4px; }
 .shop-usd-btn:hover { background: var(--cyan); color: var(--bg); }
 
+/* ===== v2.30 밥/휴식 ===== */
+.meal-active-bar { margin-top: 12px; padding: 12px 16px; background: rgba(255,184,0,0.1); border: 1px solid var(--warning); border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.meal-active-bar b { color: var(--warning); font-size: 16px; }
+.meal-pulse { animation: mealPulse 1.5s ease-in-out infinite; }
+@keyframes mealPulse { 50% { opacity: 0.4; } }
+.meal-resume-tag { font-size: 10px; color: var(--success); border: 1px solid var(--success); padding: 2px 6px; border-radius: 3px; }
+.meal-return-btn { margin-left: auto; padding: 8px 16px; background: var(--success); color: var(--bg); border: none; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 3px; }
+.meal-return-btn:hover { filter: brightness(1.1); }
+.meal-stats-empty { margin-top: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-faint); }
+.meal-stats-card { margin-top: 14px; padding: 16px 18px; background: var(--bg); border: 1px solid var(--border); }
+.meal-stats-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--warning); letter-spacing: 0.08em; font-weight: 700; margin-bottom: 12px; }
+.meal-stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 14px; }
+.meal-stats-grid .ms-cell { padding: 10px 6px; background: var(--bg-card); border: 1px solid var(--border); text-align: center; font-family: 'IBM Plex Mono', monospace; }
+.meal-stats-grid .ms-v { font-size: 17px; font-weight: 700; color: var(--text); }
+.meal-stats-grid .ms-l { font-size: 8px; color: var(--text-faint); margin-top: 3px; }
+.meal-chart-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-faint); margin-bottom: 6px; }
+.meal-chart { display: flex; align-items: flex-end; gap: 4px; height: 60px; margin-bottom: 8px; }
+.meal-bar-group { flex: 1; display: flex; align-items: flex-end; height: 100%; }
+.meal-bar { width: 100%; background: var(--warning); opacity: 0.7; transition: height 0.3s; }
+.meal-stats-foot { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-faint); }
+
 .gate-lock-card { padding: 36px 28px; background: linear-gradient(135deg, var(--bg-elevated), var(--bg-card)); border: 1px solid var(--danger); text-align: center; max-width: 480px; margin: 20px auto; }
 .gate-lock-card .glc-icon { font-size: 56px; margin-bottom: 10px; }
 .gate-lock-card .glc-title { font-family: 'Gowun Batang', serif; font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
@@ -5972,7 +5993,7 @@ body.konami {
 <!-- HEADER -->
 <header class="header" style="position:relative;">
   <div class="header-meta">
-    <span><span class="dot"></span>SYSTEM ONLINE · v2.29</span>
+    <span><span class="dot"></span>SYSTEM ONLINE · v2.30</span>
     <span class="clock" id="clock">--:--:-- KST</span>
   </div>
   <div class="head-stats" id="head-stats">
@@ -6263,9 +6284,12 @@ body.konami {
       <span class="qb-label" style="margin-left:12px;">▸ AUTO TIMER</span>
       <button class="bingo-btn" id="timer-toggle">▶ 측정 시작</button>
       <button class="bingo-btn" id="timer-focuslock" style="border-color: var(--success); color: var(--success);">📖 책 공부 모드</button>
+      <button class="bingo-btn" id="meal-toggle" style="border-color: var(--warning); color: var(--warning);">🍚 밥/휴식 다녀올게</button>
       <button class="bingo-btn" id="timer-add-manual" style="border-color: var(--cyan); color: var(--cyan);">+ 수동 추가</button>
       <button class="bingo-btn danger" id="timer-reset-today">↺ 오늘 초기화</button>
     </div>
+    <div id="meal-status"></div>
+    <div id="meal-stats"></div>
   </div>
 </section>
 
@@ -7598,7 +7622,7 @@ body.konami {
 
 <!-- ============ FOOTER ============ -->
 <div class="footer">
-<span class="am">&gt;</span> system: study_os.kernel v2.29<br>
+<span class="am">&gt;</span> system: study_os.kernel v2.30<br>
 <span class="am">&gt;</span> owner: 동규 (donggyu@pmi)<br>
 <span class="am">&gt;</span> initialized: 2026-05-22<br>
 <span class="am">&gt;</span> next patch trigger: 6/9 (KSA 1차 결과 발표)<br>
@@ -7631,7 +7655,8 @@ body.konami {
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.26 — 💱 코인 환율 + 🌅 앱 열기 습관.<br>
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.27 — 💱 환전 + 환차익 + 달러 보상구매.<br>
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.28 — 🐞 BUGFIX (사용자 불리 버그).<br>
-<span class="am">&gt;</span> &nbsp;&nbsp;v2.29 — <b style="color:gold;">📖 책 공부 모드 UI 거짓경고 픽스 + 🎓 KSA 6/9 정정</b>. [책공부모드] 책 공부 모드 ON(또는 포모도로 중)일 때 실제론 idle 자동정지가 안 되는데도 세션 표시에 "⚠️ 곧 idle 정지 · N초 남음" 거짓 경고가 떠서 측정이 멈추는 것처럼 오해를 유발하던 버그 수정 → 이제 "📖 책 공부 모드 · 계속 측정 중"으로 정직하게 표시(실제 측정은 원래부터 정상이었음, wall-clock 누적). [KSA] 1차 결과 발표일 6/6→6/9 정정 — 화면 텍스트(14곳)뿐 아니라 D-day 카운트다운 계산 코드와 발표일 알림 트리거(new Date 6→9, d===6→9)까지 수정(안 고쳤으면 카운트다운이 3일 일찍 끝남).<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.29 — 📖 책 공부 모드 UI 거짓경고 픽스 + 🎓 KSA 6/9 정정.<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.30 — <b style="color:gold;">🍚 밥/휴식 원클릭 + 식사시간 통계</b>. 책 공부 모드는 자리비움을 자동 구분 못 하는 한계 보완. [원클릭] "🍚 밥/휴식 다녀올게" 버튼 → 공부 타이머 자동 일시정지 + 식사 시간 측정 시작 → "복귀하기" 누르면 식사시간 기록 + (공부 중이었으면) 공부 타이머 자동 재개. 식사 중 실시간 경과시간 표시(MM:SS, 1초 갱신). [통계] 평균 식사시간 · 오늘 식사 횟수/시간 · 전체 기록 · 최근 12회 미니 막대그래프 · 최장/최단/누적. mealInfo() 디버그. 새로고침해도 식사 중이면 인터벌 복구. [부수] 콘솔 부팅 배너가 v1.4로 하드코딩돼 영원히 안 바뀌던 버그 수정 → STUDY_OS_VERSION 상수로 동적화(이제 버전 따라감).<br>
 <span class="am">&gt;</span> motto: <em>"결정 피로 = 0. 시스템이 결정하고, 나는 실행한다. 그리고 제대로 쉰다."</em><br>
 <span class="am">&gt;</span> _
 </div>
@@ -8253,11 +8278,12 @@ function updateDocTitle() {
 }
 
 // ===== Console ASCII boot =====
+const STUDY_OS_VERSION = '2.30';
 function consoleBoot() {
   const art = [
     '%c',
     '   ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄',
-    '   ██  study_os.kernel v1.4 booted   ██',
+    '   ██  study_os.kernel v' + STUDY_OS_VERSION + ' booted  ██',
     '   ██  hello, 동규. let\'s ship today.██',
     '   ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀',
     ''
@@ -9238,6 +9264,7 @@ function flushTimerSecs() {
 }
 
 function tickTimer() {
+  if (typeof gs.meal !== 'undefined' && gs.meal.active && typeof renderMealStatus === 'function') renderMealStatus(); // 밥 경과시간 실시간
   if (!gs.timer.active) return;
   // v2.15: 책 공부 모드 ON 또는 포모도로 집중 중이면 idle 자동정지 안 함 (화면 안 만져도 공부 인정)
   const pomoRunning = (typeof pomoState !== 'undefined' && pomoState && pomoState.phase === 'focus');
@@ -9415,6 +9442,10 @@ document.addEventListener('click', (e) => {
     updateTimerUI();
     if (gs.timer.focusLock) toast('📖 책 공부 모드 ON', '화면 안 만져도 계속 측정 — 책/필기/문제풀이 공부도 100% 인정. 자리 비울 땐 ⏸ 정지', { tier: 'epic' });
     else toast('📖 책 공부 모드 OFF', '15분 활동 없으면 자동 정지 (노트북 공부 전용 모드)', { tier: '' });
+  }
+  if (e.target.id === 'meal-toggle') {
+    if (typeof gs.meal !== 'undefined' && gs.meal.active) { if (typeof endMeal === 'function') endMeal(); }
+    else { if (typeof startMeal === 'function') startMeal(); }
   }
   if (e.target.id === 'timer-reset-today') {
     if (confirm('오늘 측정 데이터만 초기화 (누적은 유지)?')) {
@@ -18746,6 +18777,129 @@ function redeemWithUsd(id) {
   redeemReward(id); // 확보된 코인으로 구매
 }
 window.redeemWithUsd = redeemWithUsd;
+
+// ============================================================
+// ========== v2.30 밥/휴식 추적 + 통계 ==========
+// 🍚 버튼 → 공부 일시정지 + 밥 시간 측정 → 복귀 시 공부 자동 재개
+// ============================================================
+if (!gs.meal) gs.meal = { active: false, startedAt: null, resumeStudyAfter: false, log: [] };
+(function(){ if (!gs.meal.log) gs.meal.log = []; saveGameState(); })();
+let mealTickInterval = null;
+
+function startMeal() {
+  if (gs.meal.active) return;
+  // 공부 타이머 켜져 있으면 일시정지하고, 복귀 때 자동 재개 플래그
+  let wasStudying = false;
+  if (gs.timer.active) {
+    if (typeof flushTimerSecs === 'function') flushTimerSecs();
+    if (typeof pauseTimer === 'function') pauseTimer(true);
+    wasStudying = true;
+  }
+  gs.meal.active = true;
+  gs.meal.startedAt = Date.now();
+  gs.meal.resumeStudyAfter = wasStudying;
+  saveGameState();
+  renderMealStatus();
+  if (mealTickInterval) clearInterval(mealTickInterval);
+  mealTickInterval = setInterval(renderMealStatus, 1000); // 밥 경과시간 실시간
+  if (typeof renderMealStats === 'function') renderMealStats();
+  toast('🍚 식사/휴식 시작', (wasStudying ? '공부 타이머 일시정지함 · ' : '') + '다녀와! 복귀 누르면 ' + (wasStudying ? '공부 자동 재개' : '시간 기록'), { tier: 'rare' });
+}
+
+function endMeal() {
+  if (!gs.meal.active) return;
+  if (mealTickInterval) { clearInterval(mealTickInterval); mealTickInterval = null; }
+  const dur = Math.round((Date.now() - gs.meal.startedAt) / 60000); // 분
+  const rec = { start: gs.meal.startedAt, end: Date.now(), durationMin: Math.max(1, dur), date: todayKey() };
+  gs.meal.log.unshift(rec);
+  if (gs.meal.log.length > 200) gs.meal.log = gs.meal.log.slice(0, 200); // 최근 200개 유지
+  const resume = gs.meal.resumeStudyAfter;
+  gs.meal.active = false;
+  gs.meal.startedAt = null;
+  gs.meal.resumeStudyAfter = false;
+  saveGameState();
+  // 공부 중이었으면 재개
+  if (resume && typeof startTimer === 'function') {
+    startTimer();
+  }
+  renderMealStatus();
+  if (typeof renderMealStats === 'function') renderMealStats();
+  toast('✅ 복귀', '식사/휴식 ' + fmtMin(rec.durationMin) + ' 기록' + (resume ? ' · 공부 타이머 자동 재개 ▶' : ''), { tier: 'epic' });
+}
+window.startMeal = startMeal;
+window.endMeal = endMeal;
+
+// 밥 상태 (진행 중 표시 + 버튼)
+function renderMealStatus() {
+  const el = document.getElementById('meal-status');
+  if (!el) return;
+  const btn = document.getElementById('meal-toggle');
+  if (gs.meal.active) {
+    const sec = Math.floor((Date.now() - gs.meal.startedAt) / 1000);
+    const mm = Math.floor(sec / 60), ss = sec % 60;
+    el.innerHTML = '<div class="meal-active-bar">' +
+      '<span class="meal-pulse">🍚</span> 식사/휴식 중 · <b>' + mm + ':' + (ss < 10 ? '0' : '') + ss + '</b>' +
+      (gs.meal.resumeStudyAfter ? ' <span class="meal-resume-tag">복귀 시 공부 재개</span>' : '') +
+      '<button class="meal-return-btn" id="meal-return">✅ 복귀하기</button>' +
+    '</div>';
+    const rb = document.getElementById('meal-return');
+    if (rb) rb.onclick = endMeal;
+    if (btn) { btn.textContent = '🍚 식사 중...'; btn.style.opacity = '0.5'; }
+  } else {
+    el.innerHTML = '';
+    if (btn) { btn.textContent = '🍚 밥/휴식 다녀올게'; btn.style.opacity = '1'; }
+  }
+}
+window.renderMealStatus = renderMealStatus;
+
+// 밥 통계
+function renderMealStats() {
+  const el = document.getElementById('meal-stats');
+  if (!el) return;
+  const log = gs.meal.log || [];
+  if (!log.length) { el.innerHTML = '<div class="meal-stats-empty">🍚 아직 식사/휴식 기록 없음 — 밥 먹으러 갈 때 버튼 눌러봐</div>'; return; }
+  const today = todayKey();
+  const todayLog = log.filter(m => m.date === today);
+  const todayCount = todayLog.length;
+  const todayMin = todayLog.reduce((s, m) => s + m.durationMin, 0);
+  const allMin = log.reduce((s, m) => s + m.durationMin, 0);
+  const avg = Math.round(allMin / log.length);
+  const longest = log.reduce((mx, m) => Math.max(mx, m.durationMin), 0);
+  const shortest = log.reduce((mn, m) => Math.min(mn, m.durationMin), 99999);
+
+  // 최근 10개 미니 막대 (오래된→최근)
+  const recent = log.slice(0, 12).reverse();
+  const maxBar = Math.max.apply(null, recent.map(m => m.durationMin));
+  const bars = recent.map(m => {
+    const h = Math.round(m.durationMin / maxBar * 100);
+    const t = new Date(m.start);
+    return '<div class="meal-bar-group" title="' + (t.getMonth()+1) + '/' + t.getDate() + ' ' + t.getHours() + ':' + (t.getMinutes()<10?'0':'') + t.getMinutes() + ' · ' + m.durationMin + '분"><div class="meal-bar" style="height:' + Math.max(8,h) + '%;"></div></div>';
+  }).join('');
+
+  el.innerHTML = '<div class="meal-stats-card">' +
+    '<div class="meal-stats-title">🍚 식사/휴식 통계</div>' +
+    '<div class="meal-stats-grid">' +
+      '<div class="ms-cell"><div class="ms-v">' + avg + '분</div><div class="ms-l">평균 식사</div></div>' +
+      '<div class="ms-cell"><div class="ms-v">' + todayCount + '회</div><div class="ms-l">오늘 식사</div></div>' +
+      '<div class="ms-cell"><div class="ms-v">' + fmtMin(todayMin) + '</div><div class="ms-l">오늘 식사시간</div></div>' +
+      '<div class="ms-cell"><div class="ms-v">' + log.length + '회</div><div class="ms-l">전체 기록</div></div>' +
+    '</div>' +
+    '<div class="meal-chart-label">최근 식사 시간 (분)</div>' +
+    '<div class="meal-chart">' + bars + '</div>' +
+    '<div class="meal-stats-foot">최장 ' + longest + '분 · 최단 ' + shortest + '분 · 누적 ' + fmtMin(allMin) + '</div>' +
+  '</div>';
+}
+window.renderMealStats = renderMealStats;
+
+window.mealInfo = function(){
+  const log = gs.meal.log || [];
+  console.log('%c=== 🍚 식사/휴식 ===','color:#ffb800;font-weight:700');
+  console.log('  상태:', gs.meal.active ? '식사 중' : '대기', '· 기록', log.length + '회');
+  if (log.length) {
+    const avg = Math.round(log.reduce((s,m)=>s+m.durationMin,0)/log.length);
+    console.log('  평균 식사시간:', avg + '분');
+  }
+};
 // ============================================================
 // ===== INIT =====
 // ============================================================
@@ -18886,7 +19040,7 @@ window.redeemWithUsd = redeemWithUsd;
 
   // welcome toast
   setTimeout(() => {
-    toast('👋 BOOTED', 'study_os v2.29 · ' + gs.visits + '번째 진입 · 🔥 ' + gs.streak + 'd streak', { tier: gs.streak >= 7 ? 'rare' : '' });
+    toast('👋 BOOTED', 'study_os v2.30 · ' + gs.visits + '번째 진입 · 🔥 ' + gs.streak + 'd streak', { tier: gs.streak >= 7 ? 'rare' : '' });
     // Ctrl+K 안내 (10번째 진입마다 한 번씩 리마인드)
     if (gs.visits % 10 === 1) {
       setTimeout(() => toast('⌘ TIP', 'Ctrl+K = 빠른 검색 · Ctrl+M = 메모 · 우하단 + 버튼 = 빠른 액션', { tier: 'rare' }), 2500);
@@ -18922,6 +19076,13 @@ window.redeemWithUsd = redeemWithUsd;
   // v2.26 앱 열기 습관 (브리핑/컴백/탭환기)
   onAppOpen();
   updateTabTitle();
+  // v2.30 밥/휴식 초기 렌더 (+ 새로고침 전에 밥 중이었으면 인터벌 복구)
+  if (typeof renderMealStatus === 'function') renderMealStatus();
+  if (typeof renderMealStats === 'function') renderMealStats();
+  if (gs.meal && gs.meal.active && typeof renderMealStatus === 'function') {
+    if (mealTickInterval) clearInterval(mealTickInterval);
+    mealTickInterval = setInterval(renderMealStatus, 1000);
+  }
 })();
 </script>
 <!-- POMODORO MODAL (v1.6) -->
