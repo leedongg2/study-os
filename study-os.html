@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>동규 Study OS v2.30 — Personal Operating System</title>
+<title>동규 Study OS v2.31 — Personal Operating System</title>
 <meta name="theme-color" content="#ffb800">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5993,7 +5993,7 @@ body.konami {
 <!-- HEADER -->
 <header class="header" style="position:relative;">
   <div class="header-meta">
-    <span><span class="dot"></span>SYSTEM ONLINE · v2.30</span>
+    <span><span class="dot"></span>SYSTEM ONLINE · v2.31</span>
     <span class="clock" id="clock">--:--:-- KST</span>
   </div>
   <div class="head-stats" id="head-stats">
@@ -7622,7 +7622,7 @@ body.konami {
 
 <!-- ============ FOOTER ============ -->
 <div class="footer">
-<span class="am">&gt;</span> system: study_os.kernel v2.30<br>
+<span class="am">&gt;</span> system: study_os.kernel v2.31<br>
 <span class="am">&gt;</span> owner: 동규 (donggyu@pmi)<br>
 <span class="am">&gt;</span> initialized: 2026-05-22<br>
 <span class="am">&gt;</span> next patch trigger: 6/9 (KSA 1차 결과 발표)<br>
@@ -7656,7 +7656,8 @@ body.konami {
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.27 — 💱 환전 + 환차익 + 달러 보상구매.<br>
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.28 — 🐞 BUGFIX (사용자 불리 버그).<br>
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.29 — 📖 책 공부 모드 UI 거짓경고 픽스 + 🎓 KSA 6/9 정정.<br>
-<span class="am">&gt;</span> &nbsp;&nbsp;v2.30 — <b style="color:gold;">🍚 밥/휴식 원클릭 + 식사시간 통계</b>. 책 공부 모드는 자리비움을 자동 구분 못 하는 한계 보완. [원클릭] "🍚 밥/휴식 다녀올게" 버튼 → 공부 타이머 자동 일시정지 + 식사 시간 측정 시작 → "복귀하기" 누르면 식사시간 기록 + (공부 중이었으면) 공부 타이머 자동 재개. 식사 중 실시간 경과시간 표시(MM:SS, 1초 갱신). [통계] 평균 식사시간 · 오늘 식사 횟수/시간 · 전체 기록 · 최근 12회 미니 막대그래프 · 최장/최단/누적. mealInfo() 디버그. 새로고침해도 식사 중이면 인터벌 복구. [부수] 콘솔 부팅 배너가 v1.4로 하드코딩돼 영원히 안 바뀌던 버그 수정 → STUDY_OS_VERSION 상수로 동적화(이제 버전 따라감).<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.30 — 🍚 밥/휴식 원클릭 + 식사시간 통계.<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.31 — <b style="color:gold;">⏰ 보상 초과 페널티 (늘어짐 방지)</b>. 코인으로 산 시간제 보상(유튜브 30분·게임 30분 등)을 정해진 시간 다 쓰고도 복귀 안 하고 끌면 → 초과 1분당 코인 차감(실시간). 단가 = 보상가÷시간(예: 유튜브 200코인/30분 → 1분당 7🪙). 1분 지날 때마다 점점 더 깎여서 오래 끌수록 손해 = 시간 지키는 동기. 무료 보상(산책 등)은 페널티 0. 코인 0 밑으로는 안 깎임(빚 안 짐). 사용 위젯에 "초과 N분 · -N🪙 깎임" 실시간 표시 + 복귀 시 총 지각 정산. + 콘솔 부팅 배너 버전 동적화.<br>
 <span class="am">&gt;</span> motto: <em>"결정 피로 = 0. 시스템이 결정하고, 나는 실행한다. 그리고 제대로 쉰다."</em><br>
 <span class="am">&gt;</span> _
 </div>
@@ -8278,7 +8279,7 @@ function updateDocTitle() {
 }
 
 // ===== Console ASCII boot =====
-const STUDY_OS_VERSION = '2.30';
+const STUDY_OS_VERSION = '2.31';
 function consoleBoot() {
   const art = [
     '%c',
@@ -17404,9 +17405,11 @@ function redeemReward(id) {
 window.redeemReward = redeemReward;
 
 function startRewardSession(r) {
-  gs.rpg.activeReward = { id: r.id, name: r.name, icon: r.icon, endAt: Date.now() + r.durationMin * 60000, durationMin: r.durationMin };
+  // 초과 페널티: 코인으로 산 보상만 (무료 보상은 0). 1분당 보상 단가만큼
+  const penaltyPerMin = r.cost > 0 ? Math.max(2, Math.round(r.cost / Math.max(1, r.durationMin))) : 0;
+  gs.rpg.activeReward = { id: r.id, name: r.name, icon: r.icon, endAt: Date.now() + r.durationMin * 60000, durationMin: r.durationMin, penaltyPerMin: penaltyPerMin, _penaltyMin: 0, _penaltyTotal: 0 };
   saveGameState();
-  toast('▶ ' + r.name, r.durationMin + '분 카운트다운 시작 — 끝나면 알려줄게. 즐겨! 🎉', { tier: 'legendary' });
+  toast('▶ ' + r.name, r.durationMin + '분 카운트다운 시작' + (penaltyPerMin > 0 ? ' — 초과하면 1분당 ' + penaltyPerMin + '🪙 깎여! 시간 지켜 ⏰' : '') + ' 즐겨! 🎉', { tier: 'legendary' });
   renderRewardActive();
   startRewardCountdown();
 }
@@ -17420,15 +17423,29 @@ function startRewardCountdown() {
     const remain = ar.endAt - Date.now();
     const tEl = document.getElementById('ra-timer');
     if (remain <= 0) {
-      // 시간 종료
-      if (tEl) { tEl.textContent = '0:00'; tEl.classList.add('over'); }
+      // 초과 페널티: 복귀 안 하고 끌면 1분당 penaltyPerMin 코인 차감
+      if (ar.penaltyPerMin > 0) {
+        const overMin = Math.floor(-remain / 60000);
+        if (overMin > (ar._penaltyMin || 0)) {
+          const addMin = overMin - (ar._penaltyMin || 0);
+          let penalty = Math.min(addMin * ar.penaltyPerMin, gs.rpg.coins); // 코인 0 밑으로 안 감
+          if (penalty > 0) {
+            gs.rpg.coins -= penalty;
+            ar._penaltyTotal = (ar._penaltyTotal || 0) + penalty;
+            if (typeof logSpend === 'function') logSpend(penalty, 'penalty');
+          }
+          ar._penaltyMin = overMin;
+          saveGameState();
+          if (typeof renderRpgMini === 'function') renderRpgMini();
+        }
+      }
       if (!ar._alerted) {
         ar._alerted = true;
         saveGameState();
         if (typeof playBeep === 'function') { playBeep(660, 0.15); setTimeout(()=>playBeep(880,0.2), 200); }
-        toast('⏰ 시간 끝!', '"' + ar.name + '" 시간 종료 — 이제 복귀하자! 잘 쉬었지? 💪', { tier: 'epic' });
-        renderRewardActive();
+        toast('⏰ 시간 끝!', '"' + ar.name + '" 시간 종료 — ' + (ar.penaltyPerMin > 0 ? '복귀 안 하면 1분당 ' + ar.penaltyPerMin + '🪙 깎여! 💸 빨리 복귀' : '이제 복귀하자! 💪'), { tier: 'epic' });
       }
+      renderRewardActive(); // 초과 시간/차감액 실시간 갱신
     } else {
       const mm = Math.floor(remain / 60000);
       const ss = Math.floor((remain % 60000) / 1000);
@@ -17443,7 +17460,11 @@ function endRewardSession() {
   saveGameState();
   if (_rewardCountdownTimer) { clearInterval(_rewardCountdownTimer); _rewardCountdownTimer = null; }
   renderRewardActive();
-  if (ar) toast('✅ 복귀', '잘 쉬었어! 다시 시스템으로 — 코인 또 모으자 🪙', { tier: 'rare' });
+  if (ar) {
+    const pen = ar._penaltyTotal || 0;
+    if (pen > 0) toast('✅ 복귀 (지각 ' + (ar._penaltyMin || 0) + '분)', '초과로 ' + pen + '🪙 깎였어 💸 다음엔 시간 맞춰 복귀! 코인 또 모으자', { tier: 'warning' });
+    else toast('✅ 복귀', '시간 잘 지켰어! 다시 시스템으로 — 코인 또 모으자 🪙', { tier: 'rare' });
+  }
   if (typeof renderRpg === 'function' && gs.rpg.viewTab === 'shop') renderRpg();
 }
 window.endRewardSession = endRewardSession;
@@ -17455,13 +17476,27 @@ function renderRewardActive() {
   if (!ar) { w.classList.remove('show'); w.innerHTML = ''; return; }
   const remain = ar.endAt - Date.now();
   const over = remain <= 0;
-  const mm = Math.max(0, Math.floor(remain / 60000));
-  const ss = Math.max(0, Math.floor((remain % 60000) / 1000));
+  let timerText, subText;
+  if (over) {
+    const overMin = Math.floor(-remain / 60000);
+    const overSs = Math.floor((-remain % 60000) / 1000);
+    timerText = '+' + overMin + ':' + String(overSs).padStart(2, '0');
+    if (ar.penaltyPerMin > 0) {
+      subText = '⏰ 초과 ' + overMin + '분 · <b style="color:var(--danger);">-' + (ar._penaltyTotal || 0) + '🪙 깎임</b> (1분당 ' + ar.penaltyPerMin + '🪙)';
+    } else {
+      subText = '복귀할 시간이야 💪';
+    }
+  } else {
+    const mm = Math.max(0, Math.floor(remain / 60000));
+    const ss = Math.max(0, Math.floor((remain % 60000) / 1000));
+    timerText = mm + ':' + String(ss).padStart(2, '0');
+    subText = '남은 시간 · 정해진 만큼만 즐기기' + (ar.penaltyPerMin > 0 ? ' (초과 시 1분당 ' + ar.penaltyPerMin + '🪙)' : '');
+  }
   w.innerHTML =
     '<span class="ra-icon">' + ar.icon + '</span>' +
     '<div class="ra-info"><div class="ra-name">' + ar.name + (over ? ' · 시간 끝!' : '') + '</div>' +
-    '<div class="ra-sub">' + (over ? '복귀할 시간이야 💪' : '남은 시간 · 정해진 만큼만 즐기기') + '</div></div>' +
-    '<span class="ra-timer' + (over ? ' over' : '') + '" id="ra-timer">' + mm + ':' + String(ss).padStart(2,'0') + '</span>' +
+    '<div class="ra-sub">' + subText + '</div></div>' +
+    '<span class="ra-timer' + (over ? ' over' : '') + '" id="ra-timer">' + timerText + '</span>' +
     '<button class="ra-done" id="ra-done">' + (over ? '복귀 ✓' : '일찍 끝내기') + '</button>';
   w.classList.add('show');
   const done = document.getElementById('ra-done');
@@ -19040,7 +19075,7 @@ window.mealInfo = function(){
 
   // welcome toast
   setTimeout(() => {
-    toast('👋 BOOTED', 'study_os v2.30 · ' + gs.visits + '번째 진입 · 🔥 ' + gs.streak + 'd streak', { tier: gs.streak >= 7 ? 'rare' : '' });
+    toast('👋 BOOTED', 'study_os v2.31 · ' + gs.visits + '번째 진입 · 🔥 ' + gs.streak + 'd streak', { tier: gs.streak >= 7 ? 'rare' : '' });
     // Ctrl+K 안내 (10번째 진입마다 한 번씩 리마인드)
     if (gs.visits % 10 === 1) {
       setTimeout(() => toast('⌘ TIP', 'Ctrl+K = 빠른 검색 · Ctrl+M = 메모 · 우하단 + 버튼 = 빠른 액션', { tier: 'rare' }), 2500);
