@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>동규 Study OS v2.31 — Personal Operating System</title>
+<title>동규 Study OS v2.32 — Personal Operating System</title>
 <meta name="theme-color" content="#ffb800">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5993,7 +5993,7 @@ body.konami {
 <!-- HEADER -->
 <header class="header" style="position:relative;">
   <div class="header-meta">
-    <span><span class="dot"></span>SYSTEM ONLINE · v2.31</span>
+    <span><span class="dot"></span>SYSTEM ONLINE · v2.32</span>
     <span class="clock" id="clock">--:--:-- KST</span>
   </div>
   <div class="head-stats" id="head-stats">
@@ -7622,7 +7622,7 @@ body.konami {
 
 <!-- ============ FOOTER ============ -->
 <div class="footer">
-<span class="am">&gt;</span> system: study_os.kernel v2.31<br>
+<span class="am">&gt;</span> system: study_os.kernel v2.32<br>
 <span class="am">&gt;</span> owner: 동규 (donggyu@pmi)<br>
 <span class="am">&gt;</span> initialized: 2026-05-22<br>
 <span class="am">&gt;</span> next patch trigger: 6/9 (KSA 1차 결과 발표)<br>
@@ -7657,7 +7657,8 @@ body.konami {
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.28 — 🐞 BUGFIX (사용자 불리 버그).<br>
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.29 — 📖 책 공부 모드 UI 거짓경고 픽스 + 🎓 KSA 6/9 정정.<br>
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.30 — 🍚 밥/휴식 원클릭 + 식사시간 통계.<br>
-<span class="am">&gt;</span> &nbsp;&nbsp;v2.31 — <b style="color:gold;">⏰ 보상 초과 페널티 (늘어짐 방지)</b>. 코인으로 산 시간제 보상(유튜브 30분·게임 30분 등)을 정해진 시간 다 쓰고도 복귀 안 하고 끌면 → 초과 1분당 코인 차감(실시간). 단가 = 보상가÷시간(예: 유튜브 200코인/30분 → 1분당 7🪙). 1분 지날 때마다 점점 더 깎여서 오래 끌수록 손해 = 시간 지키는 동기. 무료 보상(산책 등)은 페널티 0. 코인 0 밑으로는 안 깎임(빚 안 짐). 사용 위젯에 "초과 N분 · -N🪙 깎임" 실시간 표시 + 복귀 시 총 지각 정산. + 콘솔 부팅 배너 버전 동적화.<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.31 — ⏰ 보상 초과 페널티 (늘어짐 방지).<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.32 — <b style="color:gold;">🛡️ 동기화 빈 데이터 이중 차단 (데이터 유실 방지)</b>. [문제] 빈 기기(코인·XP·공부기록 다 0)가 자동동기화로 클라우드의 진짜 데이터를 빈 데이터로 덮어쓰는 치명적 사고 발생. [수정] isEmptyState() 판정 추가 → ①업로드 차단: 내 데이터가 비어있으면 클라우드에 push 자체를 안 함(진짜 데이터 보호) ②수신 차단: 클라우드가 빈 데이터인데 내 건 멀쩡하면 그 빈 걸 안 받음(빈 데이터 전염 차단). 빈 기기는 "받기만, 못 올리게". 데이터 생기면 자동으로 동기화 재개. [검증] 빈push차단·진짜push정상·빈클라우드거부·진짜클라우드적용 4종 통과.<br>
 <span class="am">&gt;</span> motto: <em>"결정 피로 = 0. 시스템이 결정하고, 나는 실행한다. 그리고 제대로 쉰다."</em><br>
 <span class="am">&gt;</span> _
 </div>
@@ -8279,7 +8280,7 @@ function updateDocTitle() {
 }
 
 // ===== Console ASCII boot =====
-const STUDY_OS_VERSION = '2.31';
+const STUDY_OS_VERSION = '2.32';
 function consoleBoot() {
   const art = [
     '%c',
@@ -14597,9 +14598,33 @@ function getSupaClient() {
   return _supaClient;
 }
 
+// 빈 상태 판정 — 코인·XP·평생획득·공부기록 전부 0이면 "의미없는 빈 데이터"
+function isEmptyState() {
+  const r = gs.rpg || {};
+  const totalStudy = (typeof getTotalAll === 'function') ? getTotalAll() : 0;
+  return (r.totalEarned || 0) === 0 && (r.coins || 0) === 0 && (r.xp || 0) === 0 && totalStudy === 0;
+}
+window.isEmptyState = isEmptyState;
+
+// 클라우드 데이터가 빈 상태인지
+function isCloudEmpty(cloudData) {
+  if (!cloudData || !cloudData.rpg) return true;
+  const r = cloudData.rpg;
+  const t = cloudData.timer && cloudData.timer.total ? cloudData.timer.total : {};
+  const totalStudy = (t.A||0)+(t.B||0)+(t.C||0)+(t.D||0)+(t.OFF||0);
+  return (r.totalEarned || 0) === 0 && (r.coins || 0) === 0 && (r.xp || 0) === 0 && totalStudy === 0;
+}
+window.isCloudEmpty = isCloudEmpty;
+
 async function supaPush(silent) {
   const client = getSupaClient();
   if (!client) { if (!silent) toast('⚠ SYNC', 'Supabase 설정 필요', { tier: 'warning' }); return false; }
+  // ★ 빈 데이터 업로드 차단 — 텅 빈 기기가 클라우드의 진짜 데이터를 덮어쓰는 사고 방지
+  if (isEmptyState()) {
+    console.log('[sync] 🛡️ 빈 상태라 업로드 차단 (클라우드의 진짜 데이터 보호). 데이터 생기면 자동 재개.');
+    if (!silent) toast('🛡️ 업로드 차단', '데이터가 비어서 업로드 안 함 — 클라우드 진짜 데이터 보호 중. 먼저 ⬇내려받기 하거나 백업 복원해', { tier: 'warning' });
+    return false;
+  }
   try {
     window.flushSave && window.flushSave();
     const payload = JSON.parse(JSON.stringify(gs));
@@ -18369,6 +18394,11 @@ function softApplyCloud(cloudData, cloudTime) {
   if (!cloudData || !cloudData.timer) return false;
   if (cloudData._pushedBy && cloudData._pushedBy === gs.sync.clientId) return false; // 내가 보낸 것
   if (cloudTime && cloudTime <= (gs.lastModified || 0)) return false;                // 내가 더 최신
+  // ★ 빈 클라우드가 진짜 로컬 데이터를 덮어쓰는 것 차단 (빈 데이터 전염 방지)
+  if (typeof isCloudEmpty === 'function' && isCloudEmpty(cloudData) && typeof isEmptyState === 'function' && !isEmptyState()) {
+    console.log('[sync] 🛡️ 클라우드가 빈 데이터 — 내 진짜 데이터 보호 위해 수신 거부');
+    return false;
+  }
   _applyingRemote = true;
   const sync = gs.sync; // sync 설정(키 포함)은 로컬 유지
   Object.keys(gs).forEach(k => delete gs[k]);
@@ -19075,7 +19105,7 @@ window.mealInfo = function(){
 
   // welcome toast
   setTimeout(() => {
-    toast('👋 BOOTED', 'study_os v2.31 · ' + gs.visits + '번째 진입 · 🔥 ' + gs.streak + 'd streak', { tier: gs.streak >= 7 ? 'rare' : '' });
+    toast('👋 BOOTED', 'study_os v2.32 · ' + gs.visits + '번째 진입 · 🔥 ' + gs.streak + 'd streak', { tier: gs.streak >= 7 ? 'rare' : '' });
     // Ctrl+K 안내 (10번째 진입마다 한 번씩 리마인드)
     if (gs.visits % 10 === 1) {
       setTimeout(() => toast('⌘ TIP', 'Ctrl+K = 빠른 검색 · Ctrl+M = 메모 · 우하단 + 버튼 = 빠른 액션', { tier: 'rare' }), 2500);
