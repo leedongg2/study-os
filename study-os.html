@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>동규 Study OS v2.39 — Personal Operating System</title>
+<title>동규 Study OS v2.40 — Personal Operating System</title>
 <meta name="theme-color" content="#ffb800">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6023,7 +6023,7 @@ body.konami {
 <!-- HEADER -->
 <header class="header" style="position:relative;">
   <div class="header-meta">
-    <span><span class="dot"></span>SYSTEM ONLINE · v2.39</span>
+    <span><span class="dot"></span>SYSTEM ONLINE · v2.40</span>
     <span class="clock" id="clock">--:--:-- KST</span>
   </div>
   <div class="head-stats" id="head-stats">
@@ -7652,7 +7652,7 @@ body.konami {
 
 <!-- ============ FOOTER ============ -->
 <div class="footer">
-<span class="am">&gt;</span> system: study_os.kernel v2.39<br>
+<span class="am">&gt;</span> system: study_os.kernel v2.40<br>
 <span class="am">&gt;</span> owner: 동규 (donggyu@pmi)<br>
 <span class="am">&gt;</span> initialized: 2026-05-22<br>
 <span class="am">&gt;</span> next patch trigger: 6/9 (KSA 1차 결과 발표)<br>
@@ -7694,8 +7694,8 @@ body.konami {
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.35 — <b style="color:gold;">🌏 날짜 계산 UTC→로컬(KST) 버그 수정 (날짜 경계 9시간 밀림)</b>. [문제] todayKey()를 비롯한 모든 날짜키가 toISOString()=UTC 기준이라, 한국(UTC+9)에서 자정~오전9시 활동이 전부 "어제"로 집계됨 → 새벽 공부가 전날 기록으로, 아침 출석 안 됨, streak 꼬임, 이자가 오전9시에 갱신, 일일통계 9시간 밀림. [수정] dateStr() 헬퍼를 getTimezoneOffset() 보정으로 로컬 기준화 + 코드 전역의 UTC 날짜 계산(20여 곳)을 dateStr()로 통일 → 저장키=조회키 일관성 확보. 이제 한국 자정에 정확히 날짜 전환. [검증] KST 새벽2시→올바른 당일 날짜, todayKey==dateStr 일치 확인.<br>
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.36 — <b style="color:gold;">🎮 보상 사용 중 공부 측정되던 버그 수정 (부정 적립 차단)</b>. [문제] 밥/휴식은 공부 타이머를 멈추는데, 코인으로 산 보상(유튜브·게임 등) 사용 시엔 공부 타이머가 안 멈춰서 → 보상 즐기는 시간(특히 책공부 모드면 화면 안 만져도)이 공부시간으로 측정되고 코인+XP까지 부정 적립되던 버그. [수정] 보상 시작 시 공부 측정 중이면 자동 일시정지(_resumeStudy 기억) → 복귀 시 공부 자동 재개. 밥/휴식과 동일 패턴, 중첩(공부→밥→보상→...)에도 타이머 안 꼬임. [검증] 단독·중첩 시나리오 전부 통과.<br>
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.37 — <b style="color:gold;">⏱️ 동기화 시 측정시간 중복 누적 버그 수정</b>. [문제] 클라우드 동기화가 gs를 통째 교체할 때 타이머 진행상태(active·startedAt)까지 받아와서 → 두 기기를 동시에 열어두면, 한쪽에서 측정 시작 시 측정 안 한 다른 기기도 동기화로 active=true를 받아 flush 때 같은 시간을 중복 누적(예: 기기A 30분 → 기기B도 +30분). 공부시간 뻥튀기. [수정] softApplyCloud에서 타이머 진행상태(active/startedAt/sessionSecAccum/sessionMin/lastActivityAt/focusLock)는 각 기기 로컬 유지, 누적값(total/daily/byHour/byDow)만 동기화. 한 기기서 측정해도 다른 기기가 중복 안 함. [검증] 측정 안 한 기기가 동기화로 active 받아도 누적 0 확인.<br>
-<span class="am">&gt;</span> &nbsp;&nbsp;v2.39 — <b style="color:gold;">📥 받기(pull) 보호 추가</b>. [문제] 수동 받기(supaPull)가 softApplyCloud를 안 거치고 gs를 직접 교체 → v2.37의 안전장치 2개가 받기엔 빠져있었음: ①빈 클라우드를 경고 없이 받아 진짜 데이터를 덮어쓸 수 있음 ②상대가 측정 중이던 timer.active=true를 그대로 받아 받는 기기에서 측정이 부활(시간 뻥튀기). [수정] supaPull에 빈 클라우드 받기 경고(확인 후에만 진행)+자동 받기 시 빈 거 거부, 받을 때 타이머 진행상태(active/startedAt/sessionSecAccum) 정지로 리셋. [검증] 측정중 데이터 받아도 timer.active=false·startedAt=0, 빈 클라우드 자동 받기 거부 확인.<br>
-<span class="am">&gt;</span> &nbsp;&nbsp;v2.38 — 🔄 자동→수동 방향 동기화(📤보내기/📥받기, 기기 자동감지 라벨) + 📊 보상 사용 통계(코인 쓴 곳 막대그래프).<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.40 — <b style="color:gold;">🚨 백업기록 있을 때 앱 전체가 안 뜨던 치명적 버그 수정</b>. [문제] updateBackupInfo에서 `const dateStr = dateStr(last)` — 지역변수 이름을 함수 이름과 똑같이 지어서, 변수가 함수를 가린 채 자기 자신을 초기화 전에 호출(self-shadow TDZ) → "Cannot access dateStr before initialization" 에러로 init 전체가 중단됨 → 모든 위젯이 빈칸으로 표시. 백업한 적 있는 기기(gs.lastBackup 존재)에서만 발동(없으면 early return이라 안 터짐 → jsdom 테스트가 놓침). [수정] 지역변수명을 dStr로 변경. [부수] Service Worker가 blob: URL로 등록 실패하던 콘솔 에러(https 호스팅 미지원, 무해)를 친화 로그로 변경. [검증] 실제 백업데이터+모바일 모드로 재현 → init 에러 0, 전 위젯 정상 렌더, backup-info 정상 확인.<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.39 — 📥 받기(pull) 보호(빈 클라우드 경고+타이머 정지 리셋).<br>
 <span class="am">&gt;</span> motto: <em>"결정 피로 = 0. 시스템이 결정하고, 나는 실행한다. 그리고 제대로 쉰다."</em><br>
 <span class="am">&gt;</span> _
 </div>
@@ -8246,11 +8246,7 @@ const GS_KEY = 'study_os_state_v1';
 let gs = loadGameState();
 
 function loadGameState() {
-  try {
-    const raw = localStorage.getItem(GS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  return {
+  const defaults = {
     firstVisit: dateStr(new Date()),
     visits: 0,
     lastVisitDate: null,
@@ -8262,6 +8258,15 @@ function loadGameState() {
     flags: { konami: false, secretFound: [] },
     easterShown: []
   };
+  try {
+    const raw = localStorage.getItem(GS_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      // ★ 저장 데이터를 기본값 위에 덮어씀 — 옛 버전이라 일부 최상위 필드(trophies 등)가 없어도 기본값으로 보충 (없으면 앱 전체가 안 뜨던 버그 방지)
+      if (saved && typeof saved === 'object') return Object.assign({}, defaults, saved);
+    }
+  } catch(e) {}
+  return defaults;
 }
 
 function saveGameState() {
@@ -8317,7 +8322,7 @@ function updateDocTitle() {
 }
 
 // ===== Console ASCII boot =====
-const STUDY_OS_VERSION = '2.39';
+const STUDY_OS_VERSION = '2.40';
 function consoleBoot() {
   const art = [
     '%c',
@@ -9139,13 +9144,13 @@ function updateBackupInfo() {
   }
   const last = new Date(gs.lastBackup);
   const days = Math.floor((new Date() - last) / 86400000);
-  const dateStr = dateStr(last);
+  const dStr = dateStr(last);
   let cls = '';
   let dayLabel = days === 0 ? '오늘' : days === 1 ? '어제' : days + '일 전';
   if (days >= 60) cls = 'critical';
   else if (days >= 30) cls = 'stale';
   info.className = 'backup-info ' + cls;
-  info.innerHTML = '마지막 백업: <b>' + dateStr + ' (' + dayLabel + ')</b>';
+  info.innerHTML = '마지막 백업: <b>' + dStr + ' (' + dayLabel + ')</b>';
 }
 
 function checkBackupReminder() {
@@ -12702,7 +12707,8 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   navigator.serviceWorker.register(swUrl).then(() => {
     console.log('%c[PWA] Service Worker registered', 'color:#8be9fd');
   }).catch(err => {
-    console.log('[PWA] SW registration failed:', err);
+    // blob: URL SW는 https 호스팅(GitHub Pages 등)에서 미지원 — 오프라인 캐시 기능만 생략될 뿐 앱 동작엔 영향 없음
+    console.log('%c[PWA] 오프라인 캐시 생략됨 (이 호스팅 환경 정상 · 앱 기능엔 영향 없음)', 'color:#6272a4');
   });
 }
 
@@ -19220,7 +19226,7 @@ window.mealInfo = function(){
 
   // welcome toast
   setTimeout(() => {
-    toast('👋 BOOTED', 'study_os v2.39 · ' + gs.visits + '번째 진입 · 🔥 ' + gs.streak + 'd streak', { tier: gs.streak >= 7 ? 'rare' : '' });
+    toast('👋 BOOTED', 'study_os v2.40 · ' + gs.visits + '번째 진입 · 🔥 ' + gs.streak + 'd streak', { tier: gs.streak >= 7 ? 'rare' : '' });
     // Ctrl+K 안내 (10번째 진입마다 한 번씩 리마인드)
     if (gs.visits % 10 === 1) {
       setTimeout(() => toast('⌘ TIP', 'Ctrl+K = 빠른 검색 · Ctrl+M = 메모 · 우하단 + 버튼 = 빠른 액션', { tier: 'rare' }), 2500);
