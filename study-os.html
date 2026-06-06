@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>동규 Study OS v2.32 — Personal Operating System</title>
+<title>동규 Study OS v2.37 — Personal Operating System</title>
 <meta name="theme-color" content="#ffb800">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5993,7 +5993,7 @@ body.konami {
 <!-- HEADER -->
 <header class="header" style="position:relative;">
   <div class="header-meta">
-    <span><span class="dot"></span>SYSTEM ONLINE · v2.32</span>
+    <span><span class="dot"></span>SYSTEM ONLINE · v2.37</span>
     <span class="clock" id="clock">--:--:-- KST</span>
   </div>
   <div class="head-stats" id="head-stats">
@@ -7622,7 +7622,7 @@ body.konami {
 
 <!-- ============ FOOTER ============ -->
 <div class="footer">
-<span class="am">&gt;</span> system: study_os.kernel v2.32<br>
+<span class="am">&gt;</span> system: study_os.kernel v2.37<br>
 <span class="am">&gt;</span> owner: 동규 (donggyu@pmi)<br>
 <span class="am">&gt;</span> initialized: 2026-05-22<br>
 <span class="am">&gt;</span> next patch trigger: 6/9 (KSA 1차 결과 발표)<br>
@@ -7658,7 +7658,12 @@ body.konami {
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.29 — 📖 책 공부 모드 UI 거짓경고 픽스 + 🎓 KSA 6/9 정정.<br>
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.30 — 🍚 밥/휴식 원클릭 + 식사시간 통계.<br>
 <span class="am">&gt;</span> &nbsp;&nbsp;v2.31 — ⏰ 보상 초과 페널티 (늘어짐 방지).<br>
-<span class="am">&gt;</span> &nbsp;&nbsp;v2.32 — <b style="color:gold;">🛡️ 동기화 빈 데이터 이중 차단 (데이터 유실 방지)</b>. [문제] 빈 기기(코인·XP·공부기록 다 0)가 자동동기화로 클라우드의 진짜 데이터를 빈 데이터로 덮어쓰는 치명적 사고 발생. [수정] isEmptyState() 판정 추가 → ①업로드 차단: 내 데이터가 비어있으면 클라우드에 push 자체를 안 함(진짜 데이터 보호) ②수신 차단: 클라우드가 빈 데이터인데 내 건 멀쩡하면 그 빈 걸 안 받음(빈 데이터 전염 차단). 빈 기기는 "받기만, 못 올리게". 데이터 생기면 자동으로 동기화 재개. [검증] 빈push차단·진짜push정상·빈클라우드거부·진짜클라우드적용 4종 통과.<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.32 — 🛡️ 동기화 빈 데이터 이중 차단 (데이터 유실 방지).<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.33 — 🏦 재벌/오너 등급 저축>대출 역전 버그 수정 (무한 차익거래 차단).<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.34 — 📚 일반 공부 측정 코인 3배 상향 (10분당→3분당 1코인).<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.35 — <b style="color:gold;">🌏 날짜 계산 UTC→로컬(KST) 버그 수정 (날짜 경계 9시간 밀림)</b>. [문제] todayKey()를 비롯한 모든 날짜키가 toISOString()=UTC 기준이라, 한국(UTC+9)에서 자정~오전9시 활동이 전부 "어제"로 집계됨 → 새벽 공부가 전날 기록으로, 아침 출석 안 됨, streak 꼬임, 이자가 오전9시에 갱신, 일일통계 9시간 밀림. [수정] dateStr() 헬퍼를 getTimezoneOffset() 보정으로 로컬 기준화 + 코드 전역의 UTC 날짜 계산(20여 곳)을 dateStr()로 통일 → 저장키=조회키 일관성 확보. 이제 한국 자정에 정확히 날짜 전환. [검증] KST 새벽2시→올바른 당일 날짜, todayKey==dateStr 일치 확인.<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.36 — <b style="color:gold;">🎮 보상 사용 중 공부 측정되던 버그 수정 (부정 적립 차단)</b>. [문제] 밥/휴식은 공부 타이머를 멈추는데, 코인으로 산 보상(유튜브·게임 등) 사용 시엔 공부 타이머가 안 멈춰서 → 보상 즐기는 시간(특히 책공부 모드면 화면 안 만져도)이 공부시간으로 측정되고 코인+XP까지 부정 적립되던 버그. [수정] 보상 시작 시 공부 측정 중이면 자동 일시정지(_resumeStudy 기억) → 복귀 시 공부 자동 재개. 밥/휴식과 동일 패턴, 중첩(공부→밥→보상→...)에도 타이머 안 꼬임. [검증] 단독·중첩 시나리오 전부 통과.<br>
+<span class="am">&gt;</span> &nbsp;&nbsp;v2.37 — <b style="color:gold;">⏱️ 동기화 시 측정시간 중복 누적 버그 수정</b>. [문제] 클라우드 동기화가 gs를 통째 교체할 때 타이머 진행상태(active·startedAt)까지 받아와서 → 두 기기를 동시에 열어두면, 한쪽에서 측정 시작 시 측정 안 한 다른 기기도 동기화로 active=true를 받아 flush 때 같은 시간을 중복 누적(예: 기기A 30분 → 기기B도 +30분). 공부시간 뻥튀기. [수정] softApplyCloud에서 타이머 진행상태(active/startedAt/sessionSecAccum/sessionMin/lastActivityAt/focusLock)는 각 기기 로컬 유지, 누적값(total/daily/byHour/byDow)만 동기화. 한 기기서 측정해도 다른 기기가 중복 안 함. [검증] 측정 안 한 기기가 동기화로 active 받아도 누적 0 확인.<br>
 <span class="am">&gt;</span> motto: <em>"결정 피로 = 0. 시스템이 결정하고, 나는 실행한다. 그리고 제대로 쉰다."</em><br>
 <span class="am">&gt;</span> _
 </div>
@@ -8214,7 +8219,7 @@ function loadGameState() {
     if (raw) return JSON.parse(raw);
   } catch(e) {}
   return {
-    firstVisit: new Date().toISOString().slice(0,10),
+    firstVisit: dateStr(new Date()),
     visits: 0,
     lastVisitDate: null,
     streak: 0,
@@ -8246,7 +8251,7 @@ function toast(tag, msg, opts = {}) {
 
 // ===== Visit counter + streak =====
 function updateVisit() {
-  const today = new Date().toISOString().slice(0,10);
+  const today = dateStr(new Date());
 
   // visits는 매번 새로고침마다 +1 (페이지 진입 = 1 visit)
   gs.visits++;
@@ -8254,7 +8259,7 @@ function updateVisit() {
   // streak은 하루 1번만 갱신
   if (gs.lastVisitDate !== today) {
     const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-    const yStr = yesterday.toISOString().slice(0,10);
+    const yStr = dateStr(yesterday);
     if (gs.lastVisitDate === yStr) gs.streak++;
     else if (gs.lastVisitDate !== null) gs.streak = 1;
     else gs.streak = 1;
@@ -8280,7 +8285,7 @@ function updateDocTitle() {
 }
 
 // ===== Console ASCII boot =====
-const STUDY_OS_VERSION = '2.32';
+const STUDY_OS_VERSION = '2.37';
 function consoleBoot() {
   const art = [
     '%c',
@@ -8850,7 +8855,7 @@ function checkTimeBasedEaster() {
   const now = new Date();
   const h = now.getHours();
   const m = now.getMinutes();
-  const today = now.toISOString().slice(0,10);
+  const today = dateStr(now);
 
   EASTER_MESSAGES.time.forEach(e => {
     if (h === e.h && m >= e.m && m < e.m + 5) {
@@ -8873,7 +8878,7 @@ function checkDateBasedEaster() {
   const now = new Date();
   const m = now.getMonth() + 1;
   const d = now.getDate();
-  const today = now.toISOString().slice(0,10);
+  const today = dateStr(now);
 
   // 1/1 새해
   if (m === 1 && d === 1 && !gs.easterShown.includes('newyear_' + now.getFullYear())) {
@@ -8908,7 +8913,7 @@ function checkDayBasedEaster() {
   const dow = now.getDay();
   const h = now.getHours();
   const m = now.getMinutes();
-  const today = now.toISOString().slice(0,10);
+  const today = dateStr(now);
 
   // 일요일 13:50 영어과외 직전
   if (dow === 0 && h === 13 && m >= 40 && m < 55) {
@@ -9048,7 +9053,7 @@ function exportBackup() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    const today = new Date().toISOString().slice(0,10);
+    const today = dateStr(new Date());
     a.download = 'study_os_backup_' + today + '.json';
     document.body.appendChild(a);
     a.click();
@@ -9102,7 +9107,7 @@ function updateBackupInfo() {
   }
   const last = new Date(gs.lastBackup);
   const days = Math.floor((new Date() - last) / 86400000);
-  const dateStr = last.toISOString().slice(0,10);
+  const dateStr = dateStr(last);
   let cls = '';
   let dayLabel = days === 0 ? '오늘' : days === 1 ? '어제' : days + '일 전';
   if (days >= 60) cls = 'critical';
@@ -9191,7 +9196,7 @@ const IDLE_LIMIT_MS = 15 * 60 * 1000; // 15분 idle 시 자동 일시정지 (책
 if (gs.timer.focusLock === undefined) gs.timer.focusLock = true;
 const TICK_INTERVAL_MS = 10000; // 10초마다 tick (백그라운드 throttle 대비)
 
-function todayKey() { return new Date().toISOString().slice(0,10); }
+function todayKey() { return dateStr(new Date()); }
 
 function currentMode() {
   // Selector 결과에서 현재 모드 추출
@@ -9306,7 +9311,7 @@ function getWeekTotal() {
   let total = 0;
   for (let i = 0; i < 7; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
-    const k = d.toISOString().slice(0,10);
+    const k = dateStr(d);
     if (gs.timer.daily[k]) total += gs.timer.daily[k].total || 0;
   }
   return total;
@@ -10595,7 +10600,7 @@ if (!gs.lessonExtra) gs.lessonExtra = [];  // [{ id, date, start, end, name, sub
 if (!gs.lessonVacation) gs.lessonVacation = {}; // { weekKey: {reason} }
 saveGameState();
 
-function dateStr(d) { return d.toISOString().slice(0,10); }
+function dateStr(d) { const o = d.getTimezoneOffset() * 60000; return new Date(d.getTime() - o).toISOString().slice(0, 10); }
 function lessonExKey(dateS, subject, start) { return dateS + '|' + subject + '|' + start; }
 
 // 특정 날짜의 학원 목록 (정규 + 보강 - 예외, 시간변경 반영)
@@ -11591,7 +11596,7 @@ function computeWeekDistraction() {
   let total = 0;
   for (let i = 0; i < 7; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
-    const k = d.toISOString().slice(0,10);
+    const k = dateStr(d);
     total += gs.distractions.filter(x => x.dayKey === k).reduce((s,x) => s + (x.duration || 0), 0);
   }
   return total;
@@ -11602,7 +11607,7 @@ function computeCleanStreak() {
   const now = new Date();
   for (let i = 0; i < 90; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
-    const k = d.toISOString().slice(0,10);
+    const k = dateStr(d);
     const dayDist = gs.distractions.filter(x => x.dayKey === k).reduce((s,x) => s + (x.duration || 0), 0);
     if (dayDist === 0) streak++;
     else break;
@@ -12136,7 +12141,7 @@ function renderSleep() {
   let history = '';
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now); d.setDate(now.getDate() - i);
-    const k = d.toISOString().slice(0,10);
+    const k = dateStr(d);
     const rec = gs.sleep.records.find(r => r.date === k);
     const dowNames = ['일','월','화','수','목','금','토'];
     const labelDay = dowNames[d.getDay()];
@@ -13361,7 +13366,7 @@ function renderRestAnalytics() {
   const weekData = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now); d.setDate(now.getDate() - i);
-    const k = d.toISOString().slice(0,10);
+    const k = dateStr(d);
     const study = gs.timer.daily[k] ? (gs.timer.daily[k].total || 0) : 0;
     const rest = gs.rest.daily[k] ? (gs.rest.daily[k].total || 0) : 0;
     weekData.push({ dow: dowNames[d.getDay()], study, rest });
@@ -13972,7 +13977,7 @@ function renderStatsDeep() {
   let maxDay = 1;
   for (let i = trendRange - 1; i >= 0; i--) {
     const d = new Date(now); d.setDate(now.getDate() - i);
-    const k = d.toISOString().slice(0,10);
+    const k = dateStr(d);
     const study = gs.timer.daily[k] ? (gs.timer.daily[k].total || 0) : 0;
     days.push({ date: d, k, study, isToday: i === 0 });
     maxDay = Math.max(maxDay, study);
@@ -14067,7 +14072,7 @@ function renderStatsDeep() {
   let lastWeek = 0;
   for (let i = 7; i < 14; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
-    const k = d.toISOString().slice(0,10);
+    const k = dateStr(d);
     if (gs.timer.daily[k]) lastWeek += gs.timer.daily[k].total || 0;
   }
   const diff = thisWeek - lastWeek;
@@ -14163,7 +14168,7 @@ function renderHeatmapDeep() {
   const grassData = [];
   for (let i = grassDays - 1; i >= 0; i--) {
     const d = new Date(now); d.setDate(now.getDate() - i);
-    const k = d.toISOString().slice(0,10);
+    const k = dateStr(d);
     const study = gs.timer.daily[k] ? (gs.timer.daily[k].total || 0) : 0;
     grassData.push({ date: d, k, study });
     maxGrass = Math.max(maxGrass, study);
@@ -14296,7 +14301,7 @@ function generateWeeklyReport() {
   let bestDay = { k: '', study: 0 };
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now); d.setDate(now.getDate() - i);
-    const k = d.toISOString().slice(0,10);
+    const k = dateStr(d);
     const study = gs.timer.daily[k] ? (gs.timer.daily[k].total || 0) : 0;
     const rest = (gs.rest && gs.rest.daily[k]) ? (gs.rest.daily[k].total || 0) : 0;
     const temp = gs.distractions ? gs.distractions.filter(x => x.dayKey === k).reduce((s,x)=>s+(x.duration||0),0) : 0;
@@ -14309,7 +14314,7 @@ function generateWeeklyReport() {
   let lastWeekStudy = 0;
   for (let i = 7; i < 14; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
-    const k = d.toISOString().slice(0,10);
+    const k = dateStr(d);
     if (gs.timer.daily[k]) lastWeekStudy += gs.timer.daily[k].total || 0;
   }
   const diff = studyTotal - lastWeekStudy;
@@ -14971,8 +14976,8 @@ function syncStudyXP() {
     const gained = totalMin - prev;
     gs.rpg.lastStudyMin = totalMin;
     awardXP(gained, 'study', true); // 공부 1분 = 1 XP (조용히)
-    // 공부 10분당 코인 1
-    const coinGain = Math.floor(totalMin/10) - Math.floor(prev/10);
+    // 공부 3분당 코인 1
+    const coinGain = Math.floor(totalMin/3) - Math.floor(prev/3);
     if (coinGain > 0) awardCoins(coinGain, 'study', true);
     updateQuestProgress('study_min', gained);
   }
@@ -16205,7 +16210,7 @@ function computeInsights() {
     const last3 = [];
     for (let i = 0; i < 3; i++) {
       const dt = new Date(); dt.setDate(dt.getDate() - i);
-      const k = dt.toISOString().slice(0,10);
+      const k = dateStr(dt);
       last3.push((gs.timer.daily[k] && gs.timer.daily[k].total) || 0);
     }
     const recentDist = gs.distractions ? gs.distractions.filter(d => Date.now() - new Date(d.ts).getTime() < 2*86400000).length : 0;
@@ -16894,7 +16899,7 @@ function gatherNowSignals() {
   sig.burnout = false;
   try {
     const last2 = [];
-    for (let i = 0; i < 2; i++) { const dt = new Date(); dt.setDate(dt.getDate()-i); const k = dt.toISOString().slice(0,10); last2.push((gs.timer.daily[k] && gs.timer.daily[k].total) || 0); }
+    for (let i = 0; i < 2; i++) { const dt = new Date(); dt.setDate(dt.getDate()-i); const k = dateStr(dt); last2.push((gs.timer.daily[k] && gs.timer.daily[k].total) || 0); }
     const recentDist = gs.distractions ? gs.distractions.filter(d => Date.now() - new Date(d.ts).getTime() < 2*86400000).length : 0;
     if (last2[0] > 240 && last2[1] > 240 && recentDist >= 5) sig.burnout = true;
   } catch(e) {}
@@ -17432,9 +17437,16 @@ window.redeemReward = redeemReward;
 function startRewardSession(r) {
   // 초과 페널티: 코인으로 산 보상만 (무료 보상은 0). 1분당 보상 단가만큼
   const penaltyPerMin = r.cost > 0 ? Math.max(2, Math.round(r.cost / Math.max(1, r.durationMin))) : 0;
-  gs.rpg.activeReward = { id: r.id, name: r.name, icon: r.icon, endAt: Date.now() + r.durationMin * 60000, durationMin: r.durationMin, penaltyPerMin: penaltyPerMin, _penaltyMin: 0, _penaltyTotal: 0 };
+  // ★ 보상=휴식이므로 공부 측정 중이면 일시정지 (유튜브/게임 시간이 공부시간으로 둔갑 방지). 복귀 시 재개
+  let wasStudying = false;
+  if (gs.timer.active) {
+    if (typeof flushTimerSecs === 'function') flushTimerSecs();
+    if (typeof pauseTimer === 'function') pauseTimer(true);
+    wasStudying = true;
+  }
+  gs.rpg.activeReward = { id: r.id, name: r.name, icon: r.icon, endAt: Date.now() + r.durationMin * 60000, durationMin: r.durationMin, penaltyPerMin: penaltyPerMin, _penaltyMin: 0, _penaltyTotal: 0, _resumeStudy: wasStudying };
   saveGameState();
-  toast('▶ ' + r.name, r.durationMin + '분 카운트다운 시작' + (penaltyPerMin > 0 ? ' — 초과하면 1분당 ' + penaltyPerMin + '🪙 깎여! 시간 지켜 ⏰' : '') + ' 즐겨! 🎉', { tier: 'legendary' });
+  toast('▶ ' + r.name, r.durationMin + '분 카운트다운 시작' + (penaltyPerMin > 0 ? ' — 초과하면 1분당 ' + penaltyPerMin + '🪙 깎여! 시간 지켜 ⏰' : '') + (wasStudying ? ' · 공부 타이머 일시정지함' : '') + ' 즐겨! 🎉', { tier: 'legendary' });
   renderRewardActive();
   startRewardCountdown();
 }
@@ -17484,11 +17496,14 @@ function endRewardSession() {
   gs.rpg.activeReward = null;
   saveGameState();
   if (_rewardCountdownTimer) { clearInterval(_rewardCountdownTimer); _rewardCountdownTimer = null; }
+  // 보상 전에 공부 중이었으면 재개 (보상 시작 때 멈춰둔 거)
+  if (ar && ar._resumeStudy && typeof startTimer === 'function') startTimer();
   renderRewardActive();
   if (ar) {
     const pen = ar._penaltyTotal || 0;
-    if (pen > 0) toast('✅ 복귀 (지각 ' + (ar._penaltyMin || 0) + '분)', '초과로 ' + pen + '🪙 깎였어 💸 다음엔 시간 맞춰 복귀! 코인 또 모으자', { tier: 'warning' });
-    else toast('✅ 복귀', '시간 잘 지켰어! 다시 시스템으로 — 코인 또 모으자 🪙', { tier: 'rare' });
+    const resumeMsg = ar._resumeStudy ? ' · 공부 타이머 재개 ▶' : '';
+    if (pen > 0) toast('✅ 복귀 (지각 ' + (ar._penaltyMin || 0) + '분)', '초과로 ' + pen + '🪙 깎였어 💸 다음엔 시간 맞춰 복귀!' + resumeMsg, { tier: 'warning' });
+    else toast('✅ 복귀', '시간 잘 지켰어! 다시 시스템으로 — 코인 또 모으자 🪙' + resumeMsg, { tier: 'rare' });
   }
   if (typeof renderRpg === 'function' && gs.rpg.viewTab === 'shop') renderRpg();
 }
@@ -17679,7 +17694,11 @@ function applyDailyInterest() {
 
 // ===== 대출 + 복리 이자 (빚은 매일 불어남) =====
 function getLoanLimit() { return getEconTier().loanLimit || 500; }
-function getLoanRate() { return getEconTier().loanRate || 0.05; }
+function getLoanRate() {
+  const t = getEconTier();
+  // ★ 대출이자는 항상 저축이자보다 최소 1.5%p 높게 — 재벌/오너 등급에서 저축>대출 역전(무한 차익거래) 방지
+  return Math.max(t.loanRate || 0.05, (t.rate || 0) + 0.015);
+}
 function applyLoanInterest() {
   const e = gs.rpg.econ;
   if (!e.loan) e.loan = { balance: 0, totalBorrowed: 0, totalInterest: 0, lastInterestDate: null };
@@ -17776,7 +17795,7 @@ function claimDaily() {
   const today = todayKey();
   if (e.dailyClaim.lastDate === today) { toast('✓ 이미 받음', '내일 또 와!', { tier: '' }); return; }
   // 연속 출석 계산
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+  const yesterday = dateStr(new Date(Date.now() - 86400000));
   if (e.dailyClaim.lastDate === yesterday) e.dailyClaim.streak = (e.dailyClaim.streak || 0) + 1;
   else e.dailyClaim.streak = 1;
   e.dailyClaim.lastDate = today;
@@ -17819,8 +17838,8 @@ function getActiveEvent() {
 function cleanupOldData() {
   try {
     const now = Date.now();
-    const cut90 = new Date(now - 90*86400000).toISOString().slice(0,10);
-    const cut365 = new Date(now - 365*86400000).toISOString().slice(0,10);
+    const cut90 = dateStr(new Date(now - 90*86400000));
+    const cut365 = dateStr(new Date(now - 365*86400000));
     let removed = 0;
     // 경제 로그: 90일 이전 (그래프는 최대 30일만 사용)
     if (gs.rpg && gs.rpg.econ) {
@@ -17932,7 +17951,7 @@ function renderEconomy() {
 
     // 일일 출석
     const claimedToday = e.dailyClaim.lastDate === todayKey();
-    const nextStreak = (e.dailyClaim.lastDate === new Date(Date.now()-86400000).toISOString().slice(0,10)) ? (e.dailyClaim.streak||0)+1 : (claimedToday ? e.dailyClaim.streak : 1);
+    const nextStreak = (e.dailyClaim.lastDate === dateStr(new Date(Date.now()-86400000))) ? (e.dailyClaim.streak||0)+1 : (claimedToday ? e.dailyClaim.streak : 1);
     const nextBonus = Math.min(300, 50 + nextStreak * 15);
     html += '<div class="daily-claim-card"><span class="dcc-icon">🎁</span>' +
       '<div class="dcc-info"><div class="dcc-title">일일 출석 보너스</div>' +
@@ -17949,7 +17968,7 @@ function renderEconomy() {
         ? '<div class="econ-card"><div class="ec-val" style="color:var(--danger);">-' + debt.toLocaleString() + '</div><div class="ec-label">빚 💳</div></div>'
         : '<div class="econ-card"><div class="ec-val" style="color:var(--magenta);">' + betStaked.toLocaleString() + '</div><div class="ec-label">베팅 중 🎲</div></div>') +
     '</div>';
-    if (debt > 0) html += '<div style="font-family:monospace;font-size:10px;color:var(--danger);margin:-8px 0 4px;">💳 빚 ' + debt.toLocaleString() + '🪙 (일' + (tier.loanRate*100).toFixed(1) + '% 복리로 늘어나는 중) — 대출 탭에서 갚기</div>';
+    if (debt > 0) html += '<div style="font-family:monospace;font-size:10px;color:var(--danger);margin:-8px 0 4px;">💳 빚 ' + debt.toLocaleString() + '🪙 (일' + (getLoanRate()*100).toFixed(1) + '% 복리로 늘어나는 중) — 대출 탭에서 갚기</div>';
     // 환율 카드
     if (typeof fxCardHtml === 'function') html += fxCardHtml();
 
@@ -17972,7 +17991,7 @@ function renderEconomy() {
     if (!e.loan) e.loan = { balance: 0, totalBorrowed: 0, totalInterest: 0, lastInterestDate: null };
     const L = e.loan;
     const limit = tier.loanLimit;
-    const lrate = tier.loanRate;
+    const lrate = getLoanRate();
     const avail = Math.max(0, limit - L.balance);
     const projTomorrow = Math.ceil(L.balance * lrate);
     const dangerPct = limit > 0 ? Math.round(L.balance / limit * 100) : 0;
@@ -17985,7 +18004,7 @@ function renderEconomy() {
         '<div class="llb-label">한도 ' + limit.toLocaleString() + '🪙 중 ' + L.balance.toLocaleString() + ' 사용 · 추가 가능 <b>' + avail.toLocaleString() + '🪙</b></div></div>' +
       '<div class="loan-rate-info">대출 이자율 <b>일 ' + (lrate*100).toFixed(1) + '%</b> (' + tier.emblem + ' ' + tier.name + ' 신용등급) · 매일 첫 접속 시 빚에 복리 가산' +
         (L.balance>0 ? ' · 내일 이자 <b style="color:var(--danger);">+' + projTomorrow + '🪙</b>' : '') +
-        '<br>⚠ 대출이자(' + (lrate*100).toFixed(1) + '%)는 저축이자(' + (tier.rate*100).toFixed(1) + '%)보다 훨씬 높음. 빚은 눈덩이처럼 불어남 — 급할 때만, 그리고 빨리 갚자. 등급 올리면 한도↑·이자↓.</div>' +
+        '<br>⚠ 대출이자(' + (lrate*100).toFixed(1) + '%)는 저축이자(' + (tier.rate*100).toFixed(1) + '%)보다 항상 1.5%p 이상 높음 (대출받아 저축하는 꼼수 차단). 빚은 눈덩이처럼 불어남 — 급할 때만, 그리고 빨리 갚자. 등급 올리면 한도↑.</div>' +
       (dangerPct >= 80 ? '<div class="loan-warn">🚨 빚이 한도의 ' + dangerPct + '% — 신용 위험! 더 빌리지 말고 갚는 데 집중</div>' : '') +
       '<div class="bank-actions">' +
         '<button class="bank-btn loan-borrow" id="loan-borrow">＋ 빌리기</button>' +
@@ -18033,7 +18052,7 @@ function renderEconomy() {
     let maxV = 1;
     for (let i = range-1; i >= 0; i--) {
       const dt = new Date(Date.now() - i*86400000);
-      const k = dt.toISOString().slice(0,10);
+      const k = dateStr(dt);
       const inc = e.incomeLog[k] || 0;
       const out = e.spendLog[k] || 0;
       maxV = Math.max(maxV, inc, out);
@@ -18337,7 +18356,7 @@ function gateNagCheck() {
   if (!gs.gate || !gs.gate.enabled) return;
   const today = todayKey();
   if (gs.gate.lastNagDate === today) return;
-  const yk = new Date(Date.now()-86400000).toISOString().slice(0,10);
+  const yk = dateStr(new Date(Date.now()-86400000));
   const yStudy = (gs.timer.daily[yk] && gs.timer.daily[yk].total) || 0;
   const yPmi = (gs.pmi && gs.pmi.daily && gs.pmi.daily[yk] && gs.pmi.daily[yk].total) || 0;
   if (yStudy + yPmi === 0) {
@@ -18401,10 +18420,20 @@ function softApplyCloud(cloudData, cloudTime) {
   }
   _applyingRemote = true;
   const sync = gs.sync; // sync 설정(키 포함)은 로컬 유지
+  // ★ 타이머 진행상태(측정중 여부·시작시각)도 로컬 유지 — 두 기기 동시에 열어둘 때, 측정 안 한 기기가 동기화로 active=true를 받아 시간을 중복 누적하는 버그 방지. 누적값(total/daily/byHour)만 동기화됨
+  const localTimer = gs.timer ? { active: gs.timer.active, startedAt: gs.timer.startedAt, sessionSecAccum: gs.timer.sessionSecAccum, sessionMin: gs.timer.sessionMin, lastActivityAt: gs.timer.lastActivityAt, focusLock: gs.timer.focusLock } : null;
   Object.keys(gs).forEach(k => delete gs[k]);
   Object.assign(gs, cloudData);
   gs.sync = sync;
   gs.sync.lastSync = Date.now();
+  if (localTimer && gs.timer) {
+    gs.timer.active = localTimer.active;
+    gs.timer.startedAt = localTimer.startedAt;
+    gs.timer.sessionSecAccum = localTimer.sessionSecAccum;
+    gs.timer.sessionMin = localTimer.sessionMin;
+    gs.timer.lastActivityAt = localTimer.lastActivityAt;
+    if (localTimer.focusLock !== undefined) gs.timer.focusLock = localTimer.focusLock;
+  }
   // 안전 보강 (불완전/구버전 데이터로 인한 tick 크래시 방지)
   if (!gs.timer) gs.timer = {};
   if (gs.timer.active === undefined) gs.timer.active = false;
@@ -18602,7 +18631,7 @@ function showDailyBriefing() {
   gs.habit.briefedDate = today;
   saveGameState();
   // 어제 데이터
-  const yk = new Date(Date.now()-86400000).toISOString().slice(0,10);
+  const yk = dateStr(new Date(Date.now()-86400000));
   const yStudy = (gs.timer.daily[yk] && gs.timer.daily[yk].total) || 0;
   const yPmi = (gs.pmi && gs.pmi.daily && gs.pmi.daily[yk] && gs.pmi.daily[yk].total) || 0;
   const lvl = (typeof levelFromXP==='function') ? levelFromXP(gs.rpg.xp).level : '?';
@@ -19105,7 +19134,7 @@ window.mealInfo = function(){
 
   // welcome toast
   setTimeout(() => {
-    toast('👋 BOOTED', 'study_os v2.32 · ' + gs.visits + '번째 진입 · 🔥 ' + gs.streak + 'd streak', { tier: gs.streak >= 7 ? 'rare' : '' });
+    toast('👋 BOOTED', 'study_os v2.37 · ' + gs.visits + '번째 진입 · 🔥 ' + gs.streak + 'd streak', { tier: gs.streak >= 7 ? 'rare' : '' });
     // Ctrl+K 안내 (10번째 진입마다 한 번씩 리마인드)
     if (gs.visits % 10 === 1) {
       setTimeout(() => toast('⌘ TIP', 'Ctrl+K = 빠른 검색 · Ctrl+M = 메모 · 우하단 + 버튼 = 빠른 액션', { tier: 'rare' }), 2500);
