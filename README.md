@@ -34,4 +34,4 @@ Supabase Realtime으로 **폰 ↔ 노트북 데이터가 새로고침 없이 실
 2. [GitHub Pages](https://leedongg2.github.io/study-os/study-os.html)로 접속 (셋업 후)
 
 ## 📦 버전
-현재 **v2.25** — 변경 이력은 앱 하단 footer 참고.
+현재 **v2.82** — 변경 이력은 앱 하단 footer 참고.
